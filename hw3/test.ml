@@ -15,9 +15,9 @@
 *)
 let tests = [
     (* YOU NEED TO ADD A LOT MORE TESTS! *)
-		("3", "3"); 
-		("false", "false");
-		("let x = 34", "val x = 34");
+    ("3", "3"); 
+    ("false", "false");
+    ("let x = 34", "val x = 34");
     (* Val(s) *)
     ("x", "34");
     ("y", "dynamic type error");
@@ -44,35 +44,58 @@ let tests = [
     ("if x>y then x+2 else false", "dynamic type error");
     ("if 2>x then x+2 else false", "false");
     ("if x>2 then x+2 else false", "36");
+    ("if x+2 then x+2 else false", "dynamic type error");
     (* Function *)
     ("(function x -> x+2) 3", "5");
     ("(function false -> 3+6) false", "9");
     (* FunctionCall *)
-    ("let rec f num = if num > 0 then true else x (num+1)", "val f : int -> bool = <fun>");
+    (* 1 *)
+    ("let rec f num = if num > 0 then true else f (num+1)", "val f = <fun>");
     ("f 1", "true");
     ("f (-1)", "true");
+    (* 2 *)
+    ("let rec double i = i*2", "val double = <fun>");
+    ("let rec twice f = function x -> f(f(x))", "val twice = <fun>");
+    ("(twice double) 10", "40");
+    (* 3 *)
+    ("let x = 3", "val x = 3");
+    ("let rec f y = x + y", "val f = <fun>");
+    ("let x = 5", "val x = 5");
+    ("x + (f 2)", "10");
+    (* 4. recursion *)
+    ("let rec sum n = if n=0 then 0 else n + sum(n-1)", "val sum = <fun>");
+    ("sum 3", "6");
+    (* 5. recursion *)
+    ("let rec fact n = if n = 0 then 1 else n * fact (n - 1)", "val fact = <fun>");
+    ("fact 3", "6");
+    (* Tuple *)
+    ("()", "()");
+    ("(true)", "true");
+    ("(2+4, 3, 4, true)", "(6, 3, 4, true)");
+    ("let f = function (x, y, z) -> if x then y else z", "val f = <fun>");
+    ("f (true, 2, 3)", "2");
+    ("f (false, 2, 3)", "3");
+    ("let q = function (x, y, z) -> if x then y+1 else z=4", "val q = <fun>");
+    ("q (true, 2, 4)", "3");
+    ("q (false, 2, 4)", "true");
+    (* Data *)
+    ("Leaf","Leaf");
+    ("Node 1", "Node 1");
+    ("Node (true,1,Leaf)", "Node (true, 1, Leaf)");
+    ("let f = function Node x -> x + 1", "val f = <fun>");
+    ("f (Node 2)", "3");
+    ("f (Some 2)", "dynamic type error");
+    ("f (Node true)", "dynamic type error");
+    ("let f = function Node (x, y) -> if x then y*10 else x", "val f = <fun>");
+    ("f (Node (true, 2))", "20");
+    ("f (Node (false, 2))", "false");
+    ("f (Node (2, 2))", "dynamic type error");
 
-    (*
-let rec double i = i*2;;
-let rec twice f = function x -> f(f(x));;
-(twice double) 10;;
-
-should return 40
-    *)
-
-    (* 
-let x = 3;;
-let rec f y = x+y;;
-let x = 5;;
-x + (f 2);; (* should return 10 *)
-
-mocaml# Leaf;;
-Leaf
-mocaml# Node 1;;
-Node 1
-mocaml# Node (true,1,Leaf);;
-Node (true,1,Leaf);;
-*)
+    (* Match *)
+    ("match (x,y) with (x,y) -> (2,30)", "(2, 30)");
+    ("let z = 3", "val z = 3");
+    ("match z with 4 -> false | 3 -> 3", "3");
+    (* match e with ... e = IntVal / BoolVal / TupleVal / some moval.  *)
 		]
 
 (* The Test Harness
